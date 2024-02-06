@@ -23,7 +23,7 @@ Specifically, we welcome other researchers to contribute NE models into this pla
 
 Download all dependent packages
 ```bash
-    pip install -r requirement.txt
+    pip install -r requirements.txt
 ```
 
 Then the command below could be run successfully,The command can select datasets,
