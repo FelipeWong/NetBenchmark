@@ -24,17 +24,22 @@ from models.NetSMF import NetSMF
 from models.Metapath2vec import Metapath2vec
 import json
 from models.SDNE import SDNE
-from evaluation.link_prediction import link_prediction_10_time,link_prediction_10_time_old
+from evaluation.link_prediction import link_prediction_10_time, link_prediction_10_time_old
 from evaluation.node_classification import node_classifcation_10_time
 from datetime import date
 import copy
 
-datasetlist = [Cora, Flickr, BlogCatalog, Citeseer, pubmed , chameleon,film, squirrel]  # yelp,reddit,cornell,ogbn_arxiv,neil001, ppi
+from test_new_model import new_models
+
+datasetlist = [Cora, Flickr, BlogCatalog, Citeseer, pubmed, chameleon, film,
+               squirrel]  # yelp,reddit,cornell,ogbn_arxiv,neil001, ppi
 datasetdict = {Cls.__name__.lower(): Cls for Cls in datasetlist}
-modellist = [featwalk, netmf, deepwalk, node2vec, DGI, GAE, CAN_new, HOPE, SDNE,NetSMF,LINE,ProNE,Grarep,Spectral,Metapath2vec]
+modellist = [featwalk, netmf, deepwalk, node2vec, DGI, GAE, CAN_new, HOPE, SDNE, NetSMF, LINE, ProNE, Grarep, Spectral,
+             Metapath2vec]
+modellist.extend(new_models)
 modeldict = {Cls.__name__.lower(): Cls for Cls in modellist}
 if "can_new" in modeldict:
-    modeldict.update({"can":modeldict.pop("can_new")})
+    modeldict.update({"can": modeldict.pop("can_new")})
 
 datasetdict_all = copy.deepcopy(datasetdict)
 datasetdict_all['all'] = 1
@@ -54,7 +59,7 @@ def parse_args():
     parser.add_argument('--task_method', type=str, default='task1',
                         choices=['task1', 'task2', 'task3'],
                         help='The task method')
-    parser.add_argument('--training_ratio', type=float, default= 1.,
+    parser.add_argument('--training_ratio', type=float, default=1.,
                         help='The total training ratio for our time settings')
     parser.add_argument('--input_file', type=str, default=None,
                         help='The input datasets you want')
@@ -66,10 +71,10 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def time_calculating(Graph, training_time_rate):
 
-    node_ratio=1.5
-    edge_ratio=0.1
+def time_calculating(Graph, training_time_rate):
+    node_ratio = 1.5
+    edge_ratio = 0.1
     edges = list()
     nodes = Graph['Network'].tolil()
     G = nx.DiGraph()
@@ -105,8 +110,9 @@ def get_graph_time(args, dkey):
 
     return Graph, Stoptime
 
+
 def main(args):
-  # with  sem:
+    # with  sem:
     today = date.today()
     # deal with the option is not all
     if args.method != 'all':
@@ -141,7 +147,8 @@ def main(args):
             else:
                 if args.task_method == 'task1' or args.task_method == 'task3':
                     print("running node_classification")
-                    f1_mic, f1_mac,f1_mic_std,f1_mac_std ,f1_mic_array,f1_mac_array= node_classifcation_10_time(np.array(emb), Graph['Label'])
+                    f1_mic, f1_mac, f1_mic_std, f1_mac_std, f1_mic_array, f1_mac_array = node_classifcation_10_time(
+                        np.array(emb), Graph['Label'])
                     temp_result['f1_micro_mean'] = f1_mic
                     temp_result['f1_macro_mean'] = f1_mac
                     temp_result['f1_micro_std'] = f1_mic_std
@@ -150,7 +157,8 @@ def main(args):
                     temp_result['f1_macro_list'] = f1_mac_array
                 elif args.task_method == 'task2':
                     print("running link_prediction")
-                    roc_score, ap_score,roc_score_std,ap_score_std,roc_score_list,ap_score_list = link_prediction_10_time(best, Graph_cp,model)
+                    roc_score, ap_score, roc_score_std, ap_score_std, roc_score_list, ap_score_list = link_prediction_10_time(
+                        best, Graph_cp, model)
                     temp_result['roc_score_mean'] = roc_score
                     temp_result['ap_score_mean'] = ap_score
                     temp_result['roc_score_std'] = roc_score_std
@@ -160,9 +168,10 @@ def main(args):
                 # np.save('result/embFiles/' + mkey + '_embedding_' + args.dataset + '.npy', emb)
             # save it in result file by using 'add' model
             fileObject = open(eval_file_name, 'a+')
-            temp_result=json.dumps(temp_result)
+            temp_result = json.dumps(temp_result)
             fileObject.write(str(temp_result) + '\n')
             fileObject.close()
+
 
 if __name__ == "__main__":
     # np.random.seed(32)
