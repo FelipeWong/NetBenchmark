@@ -2,7 +2,7 @@ import scipy.sparse as sp
 import torch
 import torch.nn as nn
 from GraphCL_pacakage import (GCN, AvgReadout, Discriminator, Discriminator2,
-                              process, aug)
+                              graphcl_process, aug)
 from models.dgi_package import process
 from models.model import *
 from hyperparameters.public_hyper import SPACE_TREE
@@ -91,7 +91,7 @@ class GraphCL(Models):
         space_dtree = {"aug_type": hp.choice("aug_type",
                                              ["edge", "mask", "node"]),
                        "drop_percent": hp.choice("drop_percent",
-                                                 [0.0, 0.1, 0.2, 0.3, 0.4]),
+                                                 [0.0, 0.1, 0.2, 0.3]),
                        "lr": SPACE_TREE["lr"],
                        "nb_epochs": SPACE_TREE["nb_epochs"]}
         return space_dtree
@@ -121,7 +121,7 @@ class GraphCL(Models):
 
         nonlinearity = 'prelu'  # special name to separate parameters
         adj, features, labels, idx_train, idx_val, idx_test = process.load_citationmat(self.mat_content)
-        features, _ = process.preprocess_features(features)
+        features, _ = graphcl_process.preprocess_features(features)
 
         nb_nodes = features.shape[0]  # node number
         ft_size = features.shape[1]  # node features dim
@@ -168,14 +168,14 @@ class GraphCL(Models):
         ------------------------------------------------------------
         '''
 
-        adj = process.normalize_adj(adj + sp.eye(adj.shape[0]))
-        aug_adj1 = process.normalize_adj(aug_adj1 + sp.eye(aug_adj1.shape[0]))
-        aug_adj2 = process.normalize_adj(aug_adj2 + sp.eye(aug_adj2.shape[0]))
+        adj = graphcl_process.normalize_adj(adj + sp.eye(adj.shape[0]))
+        aug_adj1 = graphcl_process.normalize_adj(aug_adj1 + sp.eye(aug_adj1.shape[0]))
+        aug_adj2 = graphcl_process.normalize_adj(aug_adj2 + sp.eye(aug_adj2.shape[0]))
 
         if sparse:
-            sp_adj = process.sparse_mx_to_torch_sparse_tensor(adj)
-            sp_aug_adj1 = process.sparse_mx_to_torch_sparse_tensor(aug_adj1)
-            sp_aug_adj2 = process.sparse_mx_to_torch_sparse_tensor(aug_adj2)
+            sp_adj = graphcl_process.sparse_mx_to_torch_sparse_tensor(adj)
+            sp_aug_adj1 = graphcl_process.sparse_mx_to_torch_sparse_tensor(aug_adj1)
+            sp_aug_adj2 = graphcl_process.sparse_mx_to_torch_sparse_tensor(aug_adj2)
 
         else:
             adj = (adj + sp.eye(adj.shape[0])).todense()
