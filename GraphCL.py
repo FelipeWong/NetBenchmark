@@ -8,9 +8,13 @@ from models.model import *
 from hyperparameters.public_hyper import SPACE_TREE
 import pdb
 
+"""
+================================================================
+The model base is from the repository of Shen-Lab/GraphCL folders "unsupervised_Cora_Citeseer"
+Reference: https://proceedings.neurips.cc/paper/2020/file/3fe230348e9a12c13120749e3f9fa4cd-Paper.pdf
+================================================================
+"""
 
-# The model base is from the repository of Shen-Lab folders "unsupervised_Cora_Citeseer"
-# reference: https://proceedings.neurips.cc/paper/2020/file/3fe230348e9a12c13120749e3f9fa4cd-Paper.pdf
 
 class GraphCL_test(nn.Module):
     def __init__(self, n_in, n_h, activation):
@@ -88,12 +92,12 @@ class GraphCL(Models):
         return False
 
     def check_train_parameters(self):
-        space_dtree = {"aug_type": hp.choice("aug_type",
-                                             ["edge", "mask", "node"]),
-                       "drop_percent": hp.choice("drop_percent",
-                                                 [0.0, 0.1, 0.2, 0.3]),
-                       "lr": SPACE_TREE["lr"],
-                       "nb_epochs": SPACE_TREE["nb_epochs"]}
+        space_dtree = {
+            "aug_type": hp.choice("aug_type", ["edge", "mask", "node", "subgraph"]),
+            "drop_percent": hp.choice("drop_percent", [0.0, 0.1, 0.2, 0.3]),
+            "lr": SPACE_TREE["lr"],
+            "nb_epochs": SPACE_TREE["nb_epochs"]
+        }
         return space_dtree
 
     def train_model(self, **kwargs):
@@ -134,7 +138,7 @@ class GraphCL(Models):
         edge node mask subgraph
         ------------------------------------------------------------
         '''
-        print("Begin Aug:[{}]".format(aug_type))
+        # print("Begin Aug:[{}]".format(aug_type))
         if aug_type == 'edge':
 
             aug_features1 = features
@@ -205,7 +209,7 @@ class GraphCL(Models):
         optimiser = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=l2_coef)
 
         if torch.cuda.is_available():
-            print('Using CUDA')
+            # print('Using CUDA')
             model.cuda(device)
             features = features.cuda(device)
             aug_features1 = aug_features1.cuda(device)
@@ -255,7 +259,7 @@ class GraphCL(Models):
                            sparse, None, None, None, aug_type=aug_type)
 
             loss = b_xent(logits, lbl)
-            print('Loss:[{:.4f}]'.format(loss.item()))
+            # print('Loss:[{:.4f}]'.format(loss.item()))
 
             if loss < best:
                 best = loss
@@ -267,13 +271,13 @@ class GraphCL(Models):
                 cnt_wait += 1
 
             if cnt_wait == patience:
-                print('Early stopping!')
+                # print('Early stopping!')
                 break
 
             loss.backward()
             optimiser.step()
 
-        print('Loading {}th epoch'.format(best_t))
+        # print('Loading {}th epoch'.format(best_t))
         # model.load_state_dict(torch.load(args.save_name))
         model.load_state_dict(best_model)
 
@@ -289,4 +293,3 @@ class GraphCL(Models):
         # print('node_shape_new ', node_emb.shape)
 
         return node_emb
-
