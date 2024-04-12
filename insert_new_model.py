@@ -1,4 +1,4 @@
-from GraphCL import *
+from new_models.GraphCL import *
 
 # adding new methods
 new_models = [GraphCL]
