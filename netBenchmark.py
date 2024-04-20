@@ -29,7 +29,7 @@ from evaluation.node_classification import node_classifcation_10_time
 from datetime import date
 import copy
 
-from test_new_model import new_models
+from insert_new_model import new_models
 
 datasetlist = [Cora, Flickr, BlogCatalog, Citeseer, pubmed, chameleon, film,
                squirrel]  # yelp,reddit,cornell,ogbn_arxiv,neil001, ppi

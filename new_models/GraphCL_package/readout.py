@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+
 # Applies an average on seq, of shape (batch, nodes, features)
 # While taking into account the masking of msk
 class AvgReadout(nn.Module):
@@ -13,4 +14,3 @@ class AvgReadout(nn.Module):
         else:
             msk = torch.unsqueeze(msk, -1)
             return torch.sum(seq * msk, 1) / torch.sum(msk)
-

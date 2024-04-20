@@ -1,7 +1,7 @@
 import scipy.sparse as sp
 import torch.nn as nn
-from GraphCL_pacakage import (GCN, AvgReadout, Discriminator, Discriminator2,
-                              graphcl_process, aug)
+from new_models.GraphCL_package import (GCN, AvgReadout, Discriminator, Discriminator2,
+                                        graphcl_process, aug)
 from models.dgi_package import process
 from models.model import *
 from hyperparameters.public_hyper import SPACE_TREE

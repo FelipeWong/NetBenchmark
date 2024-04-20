@@ -34,4 +34,3 @@ class GCN(nn.Module):
             out += self.bias
 
         return self.act(out)
-
